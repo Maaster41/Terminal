@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema · Cristina</title>
+
+<style>
+body{
+    margin:0;
+    background:#0d1117;
+    color:#e6edf3;
+    font-family:"Courier New", monospace;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+#terminal{
+    width:92%;
+    max-width:850px;
+    background:#161b22;
+    border-radius:10px;
+    padding:30px;
+    box-shadow:0 0 40px rgba(0,0,0,.6);
+    border: 1px solid #30363d;
+}
+
+.linea{ margin:10px 0; white-space:pre-wrap; line-height: 1.6; }
+.ok{ color:#3fb950; }
+.warn{ color:#ffa657; }
+.blink { animation: blinker 1.5s linear infinite; color: #ff7b72; font-weight: bold; }
+@keyframes blinker { 50% { opacity: 0; } }
+
+#panel{
+    margin-top:25px;
+    padding-top:20px;
+    border-top:1px solid #30363d;
+    display:none;
+}
+
+#uptime{
+    margin-top:20px;
+    color:#ff7b72;
+    font-size:1.1rem;
+    font-weight: bold;
+}
+
+button{
+    margin:10px 8px 0 0;
+    padding:10px 18px;
+    background:#21262d;
+    color:#e6edf3;
+    border:1px solid #30363d;
+    border-radius:6px;
+    cursor:pointer;
+    transition:.25s;
+    font-family: inherit;
+}
+button:hover{
+    background:#30363d;
+    border-color: #8b949e;
+}
+
+#respuesta{
+    margin: 25px 0;
+    min-height:100px;
+    color:#79c0ff;
+    border-left: 2px solid #30363d;
+    padding-left: 20px;
+    line-height: 1.8;
+}
+
+input#entrada {
+    background:none;
+    border:none;
+    color:#e6edf3;
+    font-family:inherit;
+    font-size:1rem;
+    outline:none;
+    width:70%;
+}
+</style>
+</head>
+
+<body>
+<div id="terminal">
+    <div id="output"></div>
+
+    <div id="panel">
+        <div class="linea">Usuario: <span class="ok">Cristina</span></div>
+        <div class="linea">Rol: <span id="rol-dinamico" class="ok">Administradora del sistema</span></div>
+        <div class="linea">Estado: <span class="ok">ONLINE</span></div>
+
+        <div id="uptime"></div>
+
+        <div style="margin-top:25px;" class="linea warn">Comandos disponibles:</div>
+
+        <button onclick="ejecutarAccion('ping cristina', ping)">ping cristina</button>
+        <button onclick="ejecutarAccion('run diagnostico', diagnostico)">run diagnostico</button>
+        <button onclick="ejecutarAccion('ver_recuerdos', recuerdos)">ver_recuerdos</button>
+        <button onclick="ejecutarAccion('deploy futuro', futuro)">deploy futuro</button>
+
+        <div id="respuesta"></div>
+        
+        <div class="linea">
+            <span class="ok">root@amor:~#</span> <input id="entrada" type="text" placeholder="Escribe un comando..." autocomplete="off">
+        </div>
+    </div>
+</div>
+
+<script>
+const mensajes=[
+"Iniciando secuencia de arranque...",
+"Cargando módulos de memoria emocional...",
+"Estableciendo conexión con Cristina.dll...",
+"✔ Vinculación completada con éxito.",
+"",
+"Entrando en modo producción...",
+"AVISO: Se requiere clave para acceder a sectores críticos."
+];
+
+const output=document.getElementById("output");
+
+function escribirLinea(texto,i=0,div){
+    if(!div){
+        div=document.createElement("div");
+        div.className="linea";
+        output.appendChild(div);
+    }
+    if(i<texto.length){
+        div.textContent+=texto.charAt(i);
+        setTimeout(()=>escribirLinea(texto,i+1,div),25);
+    }
+}
+
+function iniciar(index=0){
+    if(index<mensajes.length){
+        escribirLinea(mensajes[index]);
+        setTimeout(()=>iniciar(index+1),700);
+    }else{
+        document.getElementById("panel").style.display="block";
+        iniciarContador();
+        document.getElementById("entrada").focus();
+    }
+}
+iniciar();
+
+function iniciarContador(){
+    const inicio=new Date("2025-10-31T00:00:00");
+    const uptime=document.getElementById("uptime");
+    const rol = document.getElementById("rol-dinamico");
+
+    setInterval(()=>{
+        let diff=new Date()-inicio;
+        const d=Math.floor(diff/(1000*60*60*24));
+        
+        // Cambio de rol especial a los 6 meses (aprox 182 días)
+        if(d >= 182) {
+            rol.textContent = "Compañera de vida (Medio año cumplido ❤️)";
+            rol.style.color = "#f472b6";
+        }
+
+        const h=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+        const m=Math.floor((diff%(1000*60*60))/(1000*60));
+        const s=Math.floor((diff%(1000*60))/1000);
+        uptime.textContent= `Uptime: ${d}d ${h}h ${m}m ${s}s | SEIS MESES JUNTOS`;
+    },1000);
+}
+
+const respuesta=document.getElementById("respuesta");
+
+function escribirRespuesta(texto, htmlMode = false){
+    respuesta.innerHTML="";
+    if(htmlMode) {
+        respuesta.innerHTML = texto;
+        return;
+    }
+    let i=0;
+    function type() {
+        if(i<texto.length){
+            respuesta.textContent+=texto.charAt(i++);
+            setTimeout(type, 15);
+        }
+    }
+    type();
+}
+
+function ejecutarAccion(cmdNombre, funcion){
+    document.getElementById("entrada").value = cmdNombre;
+    setTimeout(() => {
+        document.getElementById("entrada").value = "";
+        funcion();
+    }, 200);
+}
+
+function ping(){
+    escribirRespuesta("Enviando señal...\n\nRespuesta de Cristina: ¡Recibida!\nLatencia: 0ms (Conexión instantánea).\nEstado: El amor sigue creciendo.");
+}
+
+function diagnostico(){
+    escribirRespuesta(
+"Ejecutando análisis de los últimos 6 meses...<br><br>" +
+"<span class='ok'>[ OK ]</span> Risas compartidas: Infinitas.<br><br>" +
+"<span class='ok'>[ OK ]</span> Momentos juntos: Inolvidables.<br><br>" +
+"<span class='ok'>[ OK ]</span> Ganas de ti: Superando el límite.<br><br>" +
+"<span class='blink'>[ ERROR ] Archivo 'Futuro_Juntos.dat' bloqueado por clave.</span>", 
+true);
+
+    setTimeout(()=>{
+        respuesta.innerHTML += 
+"<br><br><span class='warn'>Clave parcial recuperada: [ atrev— ]</span><br>" +
+"Escribe la clave completa para desbloquear recuerdos.";
+    },1500);
+}
+
+function recuerdos(){
+    escribirRespuesta("Accediendo a la base de datos de recuerdos...\n\nError: Acceso denegado.\nMotivo: El sistema requiere que el usuario ingrese la clave 'atrevida'.");
+}
+
+function futuro(){
+    escribirRespuesta("Desplegando plan de los próximos 6 meses...\n\n● Destino: Felicidad absoluta.\n● Requisito: Seguir a tu lado.\n● Resultado: Éxito garantizado. ❤️");
+}
+
+const entrada=document.getElementById("entrada");
+entrada.addEventListener("keydown",function(e){
+    if(e.key==="Enter"){
+        const comando=this.value.toLowerCase().trim();
+        this.value="";
+        procesarComando(comando);
+    }
+});
+
+function procesarComando(cmd){
+    if(cmd==="atrevida"){
+        escribirRespuesta("<span class='ok'>CLAVE CORRECTA. Iniciando protocolo Aniversario...</span>", true);
+        setTimeout(() => { window.location.href="recuerdos.html"; }, 1500);
+        return;
+    }
+    if(cmd==="help"){
+        escribirRespuesta("Comandos: ping cristina, run diagnostico, ver_recuerdos, deploy futuro.");
+        return;
+    }
+    if(cmd !== "") escribirRespuesta("Comando '" + cmd + "' no reconocido.");
+}
+</script>
+</body>
+</html>
